@@ -1,0 +1,61 @@
+<nb-card status="info">
+    <nb-card-header>
+        <nb-icon icon="address-book" pack="fa"></nb-icon> <span class="ml-2">Contact List </span>
+        <button nbButton status="success" size="small" class="float-right" [disabled]="genericLoaderFlag" (click)="goToManageContact()">
+      <nb-icon class="mt-1" icon="plus-circle" pack="fa"></nb-icon> Contact
+    </button>
+    </nb-card-header>
+    <nb-card-body>
+
+        <div class="table-responsive mt-2">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">profile pic</th>
+                        <th scope="col">first name</th>
+                        <th scope="col">last name</th>
+                        <th scope="col">email</th>
+                        <th scope="col">phone number</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="contactListingLoadingFlag">
+                        <td colspan="7">
+                            <ngx-loader [loaderFlag]="true"></ngx-loader>
+                        </td>
+                    </tr>
+                    <ng-container *ngFor="let contact of contacts; let i= index">
+                        <tr *ngIf="contacts.length; else contactElse" [ngClass]="{'text-danger': (contact.status === contactStatusEnum.Inactive), 'text-success' : (contact.status === contactStatusEnum.Active)}">
+                            <td scope="row">{{(i + 1)}}</td>
+                            <td> <img [src]="contact.profilePic" class="profile-pic" alt="profile pic" /></td>
+                            <td>{{contact.firstName}}</td>
+                            <td>{{contact.lastName}}</td>
+                            <td>{{contact.email}}</td>
+                            <td>{{contact.phoneNumber}}</td>
+                            <td>
+                                <nb-icon class="ml-3 text-success pointer icon-size" (click)="goToManageContact(contact.id)" [ngClass]="{'disabled-content': genericLoaderFlag}" nbTooltip="edit" nbTooltipPlacement="top" nbTooltipStatus="success" icon="edit" pack="fa"></nb-icon>
+                                <nb-icon *ngIf="!contact.deleteLoderFlag" [ngClass]="{'disabled-content': genericLoaderFlag}" class="ml-3 text-danger pointer icon-size" (click)="deleteContactSwal(contact.id, i)" nbTooltip="delete" nbTooltipPlacement="top" nbTooltipStatus="danger" icon="trash"
+                                    pack="fa"></nb-icon>
+                                <div class="fa fa-spinner fa-spin ml-3 text-info icon-size" *ngIf="contact.deleteLoderFlag"></div>
+                                <span class="ml-3 float-left">
+                  <ui-switch nbTooltip="change status" nbTooltipPlacement="top" [disabled]="genericLoaderFlag"
+                    nbTooltipStatus="info" [checked]="(contact.status === contactStatusEnum.Active)"
+                    [loading]="contact.switchLoaderFlag" (change)="updateContact(contact, i)">
+                    <i class="fa fa-spinner fa-pulse" *ngIf="contact.switchLoaderFlag"></i>
+                  </ui-switch>
+                </span>
+                            </td>
+                        </tr>
+                        <ng-template #contactElse>
+                            <tr>
+                                <td colspan="7"> no record found</td>
+                            </tr>
+                        </ng-template>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </nb-card-body>
+</nb-card>
